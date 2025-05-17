@@ -5,7 +5,7 @@ set -e
 ### CONFIG
 REPO_URL="https://github.com/zorp-corp/nockchain"
 PROJECT_DIR="$HOME/nockchain"
-PUBKEY="my second pubkey"
+PUBKEY="34vkPQCAkbwuNcvBHJ5UhBjss7UKkJqp9MzpY3Wimt8RQkFeKbBDQvNwtDBdvrnftxaHB76amUZrLsfULWrezYemFs8UZyDqeKTkd6FJLLpwmqQp86xsh3gHF8ezqAP3YkUD"
 LEADER_PORT=3005
 FOLLOWER_PORT=3006
 LEADER_SOCK="leader.sock"
