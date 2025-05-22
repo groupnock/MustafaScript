@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # === REQUIRED: Set your new pubkey on a single line ===
-NEW_PUBKEY=39wNZh9bkXFvp52LgeZuYsjdkv9NaG6E5PRtX3g4HoUmmjRvAVJUFmF7Zx4fMK3tqKMHTxdcZTW6CS8kKnNjfVm6YiRr7dEFWUTSzWPukcgoUNmQsUo1QCW
-ugPQW8Ljcnraz
+NEW_PUBKEY="39wNZh9bkXFvp52LgeZuYsjdkv9NaG6E5PRtX3g4HoUmmjRvAVJUFmF7Zx4fMK3tqKMHTxdcZTW6CS8kKnNjfVm6YiRr7dEFWUTSzWPukcgoUNmQsUo1QCWugPQW8Ljcnraz"
 
 # === CONFIG ===
 PROJECT_DIR="$HOME/nockchain"
