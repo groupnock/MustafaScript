@@ -10,38 +10,52 @@ MINER_BIN="$PROJECT_DIR/target/release/nockchain"
 
 echo "🔧 Killing old miner..."
 if tmux has-session -t nock-miner 2>/dev/null; then
-  echo "🧨 Killing tmux session: nock-miner"
   tmux kill-session -t nock-miner
+  echo "✅ tmux session 'nock-miner' killed."
 else
-  echo "⚠️ No tmux session found. Using pkill fallback."
-  pkill -f nockchain
+  echo "⚠️ tmux session not found. Trying pkill..."
+  pkill -f nockchain && echo "✅ Process killed." || echo "⚠️ No running nockchain process."
 fi
 
-echo "🧹 Cleaning up socket files..."
+echo "🧹 Removing old socket files..."
 rm -rf "$PROJECT_DIR/.socket"
 
-echo "🛠 Updating Makefile MINING_PUBKEY..."
-if grep -q '^export MINING_PUBKEY :=' "$MAKEFILE"; then
-  sed -i "s/^export MINING_PUBKEY := .*/export MINING_PUBKEY := $NEW_PUBKEY/" "$MAKEFILE"
+echo "🛠 Updating Makefile..."
+if [ -f "$MAKEFILE" ]; then
+  if grep -q '^export MINING_PUBKEY :=' "$MAKEFILE"; then
+    sed -i "s/^export MINING_PUBKEY := .*/export MINING_PUBKEY := $NEW_PUBKEY/" "$MAKEFILE"
+    echo "✅ Updated MINING_PUBKEY in Makefile."
+  else
+    echo "export MINING_PUBKEY := $NEW_PUBKEY" >> "$MAKEFILE"
+    echo "✅ Added MINING_PUBKEY to Makefile."
+  fi
 else
-  echo "export MINING_PUBKEY := $NEW_PUBKEY" >> "$MAKEFILE"
+  echo "❌ Makefile not found at $MAKEFILE"
 fi
 
-echo "🛠 Updating .env MINING_PUBKEY..."
+echo "🛠 Updating .env..."
 if [ -f "$ENVFILE" ]; then
   if grep -q '^MINING_PUBKEY=' "$ENVFILE"; then
     sed -i "s/^MINING_PUBKEY=.*/MINING_PUBKEY=$NEW_PUBKEY/" "$ENVFILE"
+    echo "✅ Updated MINING_PUBKEY in .env."
   else
     echo "MINING_PUBKEY=$NEW_PUBKEY" >> "$ENVFILE"
+    echo "✅ Added MINING_PUBKEY to .env."
   fi
 else
   echo "MINING_PUBKEY=$NEW_PUBKEY" > "$ENVFILE"
+  echo "✅ Created .env with MINING_PUBKEY."
 fi
 
 echo "🚀 Starting miner in tmux..."
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || { echo "❌ Failed to cd into $PROJECT_DIR"; exit 1; }
 tmux new-session -d -s nock-miner "$MINER_BIN --mining-pubkey $NEW_PUBKEY --mine"
 
-echo "✅ Miner is now running with:"
-echo "   nockchain --mining-pubkey $NEW_PUBKEY --mine"
-echo "   inside tmux session 'nock-miner'"
+sleep 1
+if tmux has-session -t nock-miner 2>/dev/null; then
+  echo "✅ Miner started in tmux session: nock-miner"
+else
+  echo "❌ Failed to start miner in tmux."
+fi
+
+echo "✅ Script finished. You can attach with: tmux attach -t nock-miner"
